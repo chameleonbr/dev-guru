@@ -28,7 +28,6 @@ def _create_agent(
         model=model,
         instructions=[build_system_prompt()],
         output_schema=ConsultOutput,
-        thinking=True,
         skills=Skills([LocalSkills("./skills"),LocalSkills("../skills")]),
         markdown=True,
         description="Developer Guru"
