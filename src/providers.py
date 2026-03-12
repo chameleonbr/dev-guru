@@ -32,9 +32,9 @@ def _create_agent(
     return Agent(
         model=model,
         instructions=[build_system_prompt()],
-        output_schema=ConsultOutput,
+        #output_schema=ConsultOutput,
         skills=Skills([LocalSkills(skills_path)]),
-        use_json_mode=True,
+        markdown=True,
         description="Developer Guru",
         debug_mode=settings.debug
     )
