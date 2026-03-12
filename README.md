@@ -93,6 +93,7 @@ docker compose up --build
 | `ANTHROPIC_API_KEY` | Anthropic Claude API key | — |
 | `OPENAI_API_KEY` | OpenAI API key | — |
 | `OPENROUTER_API_KEY` | OpenRouter API key (universal fallback) | — |
+| `API_KEY` | Optional API key to protect REST and MCP endpoints | — |
 | `NOVICE_MODEL` | Model ID for novice level | gemini-3.1-pro-preview |
 | `MEDIUM_MODEL` | Model ID for medium level | claude-opus-4.6 |
 | `ADVANCED_MODEL` | Model ID for expert level | gpt-5.3-codex |
