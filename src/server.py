@@ -51,6 +51,7 @@ async def call_guru(
         # 5. Extract structured output
         # Agno's output_schema puts the parsed object in response.content
         result = response.content
+        logger.info(f"Agent returned: {result}")
         
         # If it's the expected Pydantic model
         if isinstance(result, ConsultOutput):
@@ -67,13 +68,14 @@ async def call_guru(
         if isinstance(result, str):
             logger.info("Agent returned string content, attempting manual parsing.")
             try:
-                # Clean markdown blocks if present
                 clean_text = result.strip()
-                if "```" in clean_text:
-                    if "```json" in clean_text:
-                        clean_text = clean_text.split("```json")[1].split("```")[0].strip()
-                    else:
-                        clean_text = clean_text.split("```")[1].split("```")[0].strip()
+                
+                # Extract JSON using outermost braces to avoid being fooled by internal backticks
+                start_index = clean_text.find('{')
+                end_index = clean_text.rfind('}')
+                
+                if start_index != -1 and end_index != -1:
+                    clean_text = clean_text[start_index:end_index + 1]
                 
                 # Try to validate as JSON and match our schema
                 parsed = ConsultOutput.model_validate_json(clean_text)
