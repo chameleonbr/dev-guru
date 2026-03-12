@@ -1,5 +1,6 @@
 from fastmcp import FastMCP
 import json
+import logging
 from .models import ConsultInput, ConsultOutput
 from .prompts import build_user_prompt
 from .router import get_agent
@@ -7,6 +8,7 @@ from .config import settings
 
 # Initialize FastMCP server
 mcp = FastMCP("dev-guru")
+logger = logging.getLogger(__name__)
 
 @mcp.tool()
 async def call_guru(
@@ -48,9 +50,47 @@ async def call_guru(
         
         # 5. Extract structured output
         # Agno's output_schema puts the parsed object in response.content
-        result: ConsultOutput = response.content
+        result = response.content
         
-        return result.model_dump()
+        # If it's the expected Pydantic model
+        if isinstance(result, ConsultOutput):
+            return result.model_dump()
+        
+        # If it's a dictionary (some providers/settings might return this)
+        if isinstance(result, dict):
+            try:
+                return ConsultOutput.model_validate(result).model_dump()
+            except Exception:
+                return result
+            
+        # If it's a string, attempt to parse it manually
+        if isinstance(result, str):
+            logger.info("Agent returned string content, attempting manual parsing.")
+            try:
+                # Clean markdown blocks if present
+                clean_text = result.strip()
+                if "```" in clean_text:
+                    if "```json" in clean_text:
+                        clean_text = clean_text.split("```json")[1].split("```")[0].strip()
+                    else:
+                        clean_text = clean_text.split("```")[1].split("```")[0].strip()
+                
+                # Try to validate as JSON and match our schema
+                parsed = ConsultOutput.model_validate_json(clean_text)
+                return parsed.model_dump()
+            except Exception as parse_err:
+                logger.error(f"Manual parsing failed: {parse_err}. Raw content: {result}")
+                # Last resort: try to find any JSON-like dict in the string
+                return {
+                    "thinking": result,
+                    "suggestions": ["Failed to parse structured output. Raw response is above."]
+                }
+
+        # Fallback for other types
+        return {
+            "thinking": str(result),
+            "suggestions": ["Unexpected response type from agent."]
+        }
         
     except Exception as e:
         logger.error(f"Error during consultation: {str(e)}", exc_info=True)
