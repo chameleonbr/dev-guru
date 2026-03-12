@@ -1,0 +1,14 @@
+services:
+  dev-guru:
+    build: .
+    expose:
+      - 8000
+    env_file:
+      - .env
+    volumes:
+      - ./skills:/app/skills
+    restart: unless-stopped
+
+networks:
+  default:
+    name: dev-guru-network
