@@ -2,8 +2,6 @@ from .models import ConsultInput
 
 SYSTEM_PROMPT_TEMPLATE = """You are a senior development consultant.
 Analyze the provided code reasoning, identify flaws, or confirm the approach.
-You MUST respond in JSON format with exactly two fields: 'thinking' (string markdown) and 'suggestions' (array of strings markdown).
-Do not include any text before or after the JSON block. Do not include markdown formatting like ```json ... ``` unless specifically required by the protocol.
 
 Adapt your depth and language to the requested level:
 - 'novice': Educational, providing clear examples and detailed explanations.
@@ -23,7 +21,8 @@ USER_PROMPT_TEMPLATE = """## Level: {level}
 {thinking}
 
 Analyze the reasoning above, refine it, and provide actionable suggestions.
-Respond in JSON: {{ "thinking": "...", "suggestions": ["...", ...] }}
+
+Respond in markdown format with exactly two sections: '#thinking' (string markdown) and '#suggestions' list of strings markdown.
 """
 
 def build_system_prompt() -> str:
