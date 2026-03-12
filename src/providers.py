@@ -1,3 +1,4 @@
+import os
 from agno.agent import Agent
 from agno.models.google import Gemini
 from agno.models.anthropic import Claude
@@ -24,13 +25,18 @@ def _create_agent(
         full_model_id = model_id if "/" in model_id else f"{openrouter_fallback_prefix}/{model_id}"
         model = OpenRouter(id=full_model_id, api_key=settings.openrouter_api_key)
     
+    # Determine project root (one level up from src)
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    skills_path = os.path.join(project_root, "skills")
+    
     return Agent(
         model=model,
         instructions=[build_system_prompt()],
         output_schema=ConsultOutput,
-        skills=Skills([LocalSkills("./skills"),LocalSkills("../skills")]),
+        skills=Skills([LocalSkills(skills_path)]),
         markdown=True,
-        description="Developer Guru"
+        description="Developer Guru",
+        debug_mode=settings.debug
     )
 
 def get_gemini_agent() -> Agent:

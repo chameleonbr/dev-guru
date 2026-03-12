@@ -53,10 +53,15 @@ async def call_guru(
         return result.model_dump()
         
     except Exception as e:
+        logger.error(f"Error during consultation: {str(e)}", exc_info=True)
         # Basic error handling and fallback
         return {
             "thinking": f"An error occurred during consultation: {str(e)}",
-            "suggestions": ["Please verify your configuration and API keys.", "Try again with a simpler context."]
+            "suggestions": [
+                "The AI response could not be parsed as structured JSON.",
+                "Verify your API keys and try again with a simpler context.",
+                "Check the server logs for the raw response if this persists."
+            ]
         }
 
 if __name__ == "__main__":
