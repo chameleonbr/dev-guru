@@ -34,7 +34,7 @@ def _create_agent(
         instructions=[build_system_prompt()],
         output_schema=ConsultOutput,
         skills=Skills([LocalSkills(skills_path)]),
-        markdown=True,
+        use_json_mode=True,
         description="Developer Guru",
         debug_mode=settings.debug
     )
