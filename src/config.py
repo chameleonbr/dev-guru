@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     
     debug: bool = True
     port: int = 8000
+    api_key: Optional[str] = None
     
     # Provider mapping configuration
     provider_novice: str = "gemini"

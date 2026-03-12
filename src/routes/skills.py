@@ -8,9 +8,14 @@ from src.skill_models import (
     MessageResponse
 )
 from src.services import SkillManager
+from src.security import verify_api_key
 import os
 
-router = APIRouter(prefix="/skills", tags=["Skills"])
+router = APIRouter(
+    prefix="/skills", 
+    tags=["Skills"],
+    dependencies=[Depends(verify_api_key)]
+)
 
 # This would ideally be managed by a dependency injection setup in the main app
 _manager: Optional[SkillManager] = None

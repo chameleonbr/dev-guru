@@ -6,6 +6,7 @@ from agno.models.openrouter import OpenRouter
 from .config import settings
 from .models import ConsultOutput
 from .prompts import build_system_prompt
+from agno.skills import Skills, LocalSkills
 
 def _create_agent(
     model_class: type,
@@ -27,6 +28,7 @@ def _create_agent(
         model=model,
         instructions=[build_system_prompt()],
         output_schema=ConsultOutput,
+        skills=Skills([LocalSkills("./skills"),LocalSkills("../skills")]),
         markdown=True,
         description="Developer Guru"
     )
